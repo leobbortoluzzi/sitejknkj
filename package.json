@@ -1,0 +1,22 @@
+{
+  "name": "sitejknkj",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^13.1.2",
+    "@astrojs/tailwind": "^6.0.2",
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.11",
+    "astro": "^6.0.5",
+    "tailwindcss": "^3.4.19"
+  },
+  "overrides": {
+    "@astrojs/tailwind": {
+      "astro": "$astro"
+    }
+  }
+}

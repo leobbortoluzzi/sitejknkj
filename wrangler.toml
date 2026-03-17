@@ -1,0 +1,20 @@
+name = "sitejknkj"
+compatibility_date = "2026-03-01"
+compatibility_flags = ["nodejs_compat"]
+# O Astro gera o worker em dist/_worker.js. 
+# Descomente a linha abaixo apenas se for rodar 'wrangler deploy' manualmente após o build.
+# main = "./dist/_worker.js"
+
+[assets]
+directory = "./dist/"
+binding = "ASSETS"
+
+
+[[kv_namespaces]]
+binding = "kv"
+# Abaixo deve ir o ID do Namespace criado no painel da Cloudflare.
+id = "41ee831fd2654a02814dd5670581ac89"
+
+[vars]
+# Gere uma string aleatória (ex: UUID) e cole aqui ou configure via painel da Cloudflare. Usada para assinar as sessoes de login.
+secret = "ibuiu887b87h"

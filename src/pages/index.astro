@@ -1,0 +1,370 @@
+---
+import { env } from 'cloudflare:workers';
+
+let data = {};
+
+if (env && env.kv) {
+    const savedData = await env.kv.get("landing_page_data_v1", "json");
+    if (savedData) data = savedData;
+}
+
+const { settings = {}, hero = {}, about = {}, services = [], beforeAfter = [], testimonials = [], faq = [], contact = {} } = data;
+---
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{settings.siteTitle || 'Aura Clinic - Estética Avançada & Bem-estar'}</title>
+<meta name="description" content={settings.metaDescription || ''}>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@latest" is:inline></script>
+<style>
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        section {
+            scroll-margin-top: 80px; 
+        }
+    </style>
+</head>
+<body style={`--primary-color: ${settings.primaryColor || '#cf1763'};`} class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<header class="sticky top-0 z-50 glass border-b border-primary/10">
+<div class="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
+<div class="flex items-center gap-1 md:gap-2 truncate mr-2">
+<div class="text-primary flex-shrink-0">
+<i data-lucide="sparkles" class="w-6 h-6 md:w-8 md:h-8"></i>
+</div>
+<span class="text-base md:text-xl font-extrabold tracking-tight text-slate-900 uppercase truncate">{settings.siteTitle || 'Aura Clinic'}</span>
+</div>
+<nav class="hidden lg:flex items-center gap-10">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#inicio">Início</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#sobre">Sobre</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#servicos">Procedimentos</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#resultados">Resultados</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#depoimentos">Depoimentos</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#faq">Dúvidas</a>
+</nav>
+<a href={`https://wa.me/${settings.whatsappNumber || ''}`} target="_blank" class="flex-shrink-0 bg-accent hover:bg-yellow-600 text-white px-4 py-2 md:px-6 md:py-2.5 rounded-full text-xs md:text-sm font-bold transition-all shadow-lg shadow-accent/20">
+                Agendar
+</a>
+</div>
+</header>
+<main>
+<section class="relative overflow-hidden pt-12 pb-24 md:pt-24 md:pb-32" id="inicio">
+<div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+<div class="flex flex-col gap-8">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest">
+<i data-lucide="check-circle" class="w-4 h-4"></i> {hero.subheadline || 'Estética de Alta Performance'}
+                    </div>
+<h1 class="text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-tight text-slate-900" set:html={hero.headline || 'Realce sua beleza com <span class="text-primary italic">naturalidade</span>.'}>
+</h1>
+<p class="text-lg text-slate-600 leading-relaxed max-w-xl">
+                        Tratamentos personalizados que unem ciência, arte e tecnologia para elevar sua autoestima. Procedimentos seguros realizados por especialistas renomados.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<a href={`https://wa.me/${settings.whatsappNumber || ''}`} target="_blank" class="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
+                            Quero agendar agora <i data-lucide="calendar" class="w-5 h-5"></i>
+</a>
+<a href="#servicos" class="border-2 border-slate-200 text-slate-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white transition-all text-center flex items-center justify-center">
+                            Ver procedimentos
+</a>
+</div>
+<div class="flex items-center gap-12 mt-4">
+<div>
+<p class="text-3xl font-black text-slate-900">10+</p>
+<p class="text-sm font-medium text-slate-500 uppercase tracking-tighter">Anos de Experiência</p>
+</div>
+<div class="w-px h-10 bg-slate-200"></div>
+<div>
+<p class="text-3xl font-black text-slate-900">5000+</p>
+<p class="text-sm font-medium text-slate-500 uppercase tracking-tighter">Clientes Satisfeitos</p>
+</div>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -inset-4 bg-primary/5 rounded-[2.5rem] rotate-3"></div>
+<div class="relative rounded-[2rem] overflow-hidden aspect-[4/5] shadow-2xl">
+<img class="w-full h-full object-cover" src={hero.backgroundImageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJjNCfrgf3SCPPIgzpknodtCtjii-m0Btf4_FtA8nkGSWd4Y_Eua_8At0Og8XCgPwTV_zcs2Ylr2JXnLTAVWjtS2UefMACpIov153gmxxWmboNha-6rdepmKo2vh-dvtHqFDoBYqHTuVe7b5aPi_UVewMKazqEZvwGtuZWaV4RSJn5MNb8D-U0Z0FbtqozWQu2ils_1Aa1s9CzUfNmtigxiWrjMAlgRjsrhI3Y_GGvRyD7SgIZNHLEwVX5PG7FahxncSzgPLbsNtI3'}/>
+</div>
+</div>
+</div>
+</section>
+
+<section class="py-24 bg-white" id="sobre">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row gap-16 items-center">
+<div class="w-full md:w-1/2">
+<div class="relative rounded-3xl overflow-hidden shadow-xl aspect-square">
+<img class="w-full h-full object-cover" src={about.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuABPQcRrmvmTkuvjShNFJhWFXzkdT6srHvHxWveQlgHYS5i5Fmc5A-UtD1r270izgwwC70j6VLbu6E0Dd65TDmlDv1PAL_qZw6pCF7gsr13du9ZbfeDNgMKwjrPQ7ZbEnnI5m_4ZK3J7xKrLIwPt4lesnB_Uta_5ofveQM4y3xUqWiy_Q9Rck7nSZrIPyI-15B4fa2bnv4ORyxISXsnkB9iZTa037nlZ79lryecJASuMggHEu8ix9vRN-WZ9AsXwdlzDpMds04hp2V5'}/>
+</div>
+</div>
+<div class="w-full md:w-1/2 flex flex-col gap-6">
+<h2 class="text-primary font-bold uppercase tracking-widest text-sm">{about.role || 'Nossa Missão'}</h2>
+<h3 class="text-4xl font-bold text-slate-900 leading-tight">{about.name || 'Excelência e Cuidado Humanizado em cada detalhe'}</h3>
+<p class="text-slate-600 text-lg leading-relaxed">
+                            {about.bio || 'Na Aura Clinic, acreditamos que a verdadeira beleza vem do equilíbrio entre saúde e autoestima. Nossa missão é oferecer uma experiência única, unindo alta tecnologia e um olhar artístico para realçar o que você tem de melhor. Cada plano de tratamento é exclusivo e desenhado sob medida para as suas necessidades, garantindo resultados harmoniosos e seguros.'}
+                        </p>
+<div class="mt-4">
+<a href="#resultados" class="text-primary font-bold flex items-center gap-2 group">
+                                Ver resultados <i data-lucide="arrow-right" class="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="py-24 bg-background-light" id="servicos">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-primary font-bold uppercase tracking-widest text-sm mb-4">Especialidades</h2>
+<h3 class="text-4xl font-black text-slate-900">Nossos Procedimentos</h3>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+            {services && services.length > 0 ? services.map((service: any) => (
+            <div class="glass p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-white flex flex-col gap-4 group w-full md:w-[calc(33.333%-2rem)] min-w-[280px] max-w-sm">
+                <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <i data-lucide={service.icon || 'sparkles'} class="w-8 h-8"></i>
+                </div>
+                <h4 class="text-xl font-bold text-slate-900">{service.title}</h4>
+                <p class="text-slate-500 text-sm leading-relaxed">{service.description}</p>
+                <a class="mt-auto pt-4 text-primary font-bold text-sm flex items-center gap-1" href={`https://wa.me/${settings.whatsappNumber}?text=Gostaria de saber mais sobre ${service.title}`} target="_blank">Saiba mais <i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+            </div>
+            )) : (
+                <>
+<div class="glass p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-white flex flex-col gap-4 group w-full md:w-[calc(33.333%-2rem)] min-w-[280px] max-w-sm">
+<div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<i data-lucide="smile" class="w-8 h-8"></i>
+</div>
+<h4 class="text-xl font-bold text-slate-900">Harmonização Facial</h4>
+<p class="text-slate-500 text-sm leading-relaxed">Equilíbrio e simetria para o rosto através de técnicas avançadas de preenchimento.</p>
+<a class="mt-auto pt-4 text-primary font-bold text-sm flex items-center gap-1" href="#">Saiba mais <i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+</div>
+<div class="glass p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-white flex flex-col gap-4 group w-full md:w-[calc(33.333%-2rem)] min-w-[280px] max-w-sm">
+<div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<i data-lucide="activity" class="w-8 h-8"></i>
+</div>
+<h4 class="text-xl font-bold text-slate-900">Botox &amp; Preenchimento</h4>
+<p class="text-slate-500 text-sm leading-relaxed">Suavização de linhas de expressão e rugas com as melhores marcas do mercado.</p>
+<a class="mt-auto pt-4 text-primary font-bold text-sm flex items-center gap-1" href="#">Saiba mais <i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+</div>
+<div class="glass p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-white flex flex-col gap-4 group w-full md:w-[calc(33.333%-2rem)] min-w-[280px] max-w-sm">
+<div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<i data-lucide="droplet" class="w-8 h-8"></i>
+</div>
+<h4 class="text-xl font-bold text-slate-900">Skinbooster</h4>
+<p class="text-slate-500 text-sm leading-relaxed">Hidratação profunda da derme para uma pele viçosa, firme e iluminada.</p>
+<a class="mt-auto pt-4 text-primary font-bold text-sm flex items-center gap-1" href="#">Saiba mais <i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+</div>
+                </>
+            )}
+</div>
+</div>
+</section>
+
+<section class="py-24 bg-white" id="resultados">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-primary font-bold uppercase tracking-widest text-sm mb-4">Transformações</h2>
+<h3 class="text-4xl font-black text-slate-900">Resultados Reais</h3>
+</div>
+<div class="flex flex-wrap justify-center gap-12">
+            {beforeAfter && beforeAfter.length > 0 ? beforeAfter.map((ba: any) => (
+            <div class="flex flex-col gap-4 w-full md:w-[calc(50%-3rem)] min-w-[300px] max-w-xl">
+                <div class="relative rounded-2xl overflow-hidden border border-slate-100 shadow-md h-80 bg-slate-100 select-none group">
+                    <img class="w-full h-full object-cover absolute top-0 left-0 pointer-events-none" src={ba.afterUrl} alt="Depois"/>
+                    <img class="w-full h-full object-cover absolute top-0 left-0 pointer-events-none" style="clip-path: inset(0 50% 0 0);" src={ba.beforeUrl} alt="Antes"/>
+                    <input type="range" min="0" max="100" value="50" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-ew-resize z-20" oninput="this.previousElementSibling.style.clipPath = 'inset(0 ' + (100 - this.value) + '% 0 0)'; this.nextElementSibling.style.left = this.value + '%'" />
+                    <div class="absolute top-0 bottom-0 left-1/2 w-1 bg-white pointer-events-none z-10 shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg text-slate-600">
+                            <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <span class="absolute top-4 left-4 glass px-3 py-1 rounded-full text-[10px] font-bold uppercase z-30 pointer-events-none shadow-sm">Antes</span>
+                    <span class="absolute top-4 right-4 glass px-3 py-1 rounded-full text-[10px] font-bold uppercase z-30 pointer-events-none shadow-sm">Depois</span>
+                </div>
+                <p class="text-center text-slate-500 font-medium italic">{ba.label}</p>
+            </div>
+            )) : (
+                <div class="flex flex-col gap-4 w-full md:w-[calc(50%-3rem)] min-w-[300px] max-w-xl">
+                    <div class="relative rounded-2xl overflow-hidden border border-slate-100 shadow-md h-80 bg-slate-100 select-none group">
+                    <img class="w-full h-full object-cover absolute top-0 left-0 pointer-events-none brightness-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEEEMaipQ30IG-dRd4EOlDfdNSYHX2dSG_Iryu5c5_VhSpLUsoHlJex_Z-fHkXgr646QR_417Lz34C1RWUzbzFgYTn5FjWsSjKGdFTiUuezgT6JM7rOEPgPG2nxmRAMvIzb8zx3Xpgbdh92Lc0wk4Sn5vDJ7NRN60kW-zRAAjYfV6z9Ues0zQdWPpODPBPECc3PcIpoS8fxeL88K9VZ-eDpnHGtg1lygac-FlPmLnQoafckcYxt0uUPBc2PcGAga9v3Eb45X9r8VVn" alt="Depois"/>
+                    <img class="w-full h-full object-cover absolute top-0 left-0 pointer-events-none" style="clip-path: inset(0 50% 0 0);" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq179geUE8UDekKG30KP_WWPtj8NW1oeWQxkkMmtyaG0qq1rp9Y2fxsH-CrNA5TPk7Q9yFVIpJ1sKhdwY3TwMzgD1o7KnlGsMhXvHDooxnnwMr2YLVqLjmV-2QIuf5hhxZNFVzj7npz2yto9ybDA4cpkJXLE86G6A05bfvcUxWWHRG5uHSi-8d49oCbrq-CXqRPyZyIHS1Gj1uirXfZtgdnOe9TctY1OW5ehp3mfH__x79e_-i-zRDcma_31q31OodR997W-J3vaG_" alt="Antes"/>
+                    <input type="range" min="0" max="100" value="50" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-ew-resize z-20" oninput="this.previousElementSibling.style.clipPath = 'inset(0 ' + (100 - this.value) + '% 0 0)'; this.nextElementSibling.style.left = this.value + '%'" />
+                    <div class="absolute top-0 bottom-0 left-1/2 w-1 bg-white pointer-events-none z-10 shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg text-slate-600">
+                    <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+                    </div>
+                    </div>
+                    <span class="absolute top-4 left-4 glass px-3 py-1 rounded-full text-[10px] font-bold uppercase z-30 pointer-events-none shadow-sm">Antes</span>
+                    <span class="absolute top-4 right-4 glass px-3 py-1 rounded-full text-[10px] font-bold uppercase z-30 pointer-events-none shadow-sm">Depois</span>
+                    </div>
+                    <p class="text-center text-slate-500 font-medium italic">Protocolo Rejuvenescimento Full Face</p>
+                </div>
+            )}
+</div>
+</div>
+</section>
+
+<section class="py-24 bg-primary-light" id="depoimentos">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-primary font-bold uppercase tracking-widest text-sm mb-4">Depoimentos</h2>
+<h3 class="text-4xl font-black text-slate-900">O que nossas clientes dizem</h3>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+            {testimonials && testimonials.length > 0 ? testimonials.map((t: any) => (
+            <div class="bg-white p-8 rounded-3xl shadow-sm w-full md:w-[calc(33.333%-2rem)] min-w-[280px] max-w-sm flex flex-col">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="size-12 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center text-slate-400">
+                        <i data-lucide="user" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-slate-900">{t.name}</h5>
+                        <div class="flex text-yellow-400">
+                            {Array.from({ length: t.rating || 5 }).map(() => <i data-lucide="star" class="w-4 h-4 fill-current"></i>)}
+                        </div>
+                    </div>
+                </div>
+                <p class="text-slate-600 leading-relaxed italic flex-1">"{t.content}"</p>
+            </div>
+            )) : (
+            <div class="bg-white p-8 rounded-3xl shadow-sm w-full max-w-sm flex flex-col">
+                <p class="text-slate-600 leading-relaxed italic">"Nenhum depoimento adicionado ainda."</p>
+            </div>
+            )}
+</div>
+</div>
+</section>
+
+<section class="py-24 bg-white" id="faq">
+<div class="max-w-3xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-primary font-bold uppercase tracking-widest text-sm mb-4">Suporte</h2>
+<h3 class="text-4xl font-black text-slate-900">Dúvidas Frequentes</h3>
+</div>
+<div class="flex flex-col gap-4">
+            {faq && faq.length > 0 ? faq.map((f: any) => (
+            <details class="group border border-slate-100 rounded-2xl p-6 hover:bg-slate-50 transition-colors">
+                <summary class="flex items-center justify-between cursor-pointer list-none font-bold text-slate-900">
+                    {f.question}
+                    <i data-lucide="chevron-down" class="w-5 h-5 transition-transform group-open:rotate-180"></i>
+                </summary>
+                <p class="mt-4 text-slate-600 leading-relaxed">{f.answer}</p>
+            </details>
+            )) : (
+                <>
+<details class="group border border-slate-100 rounded-2xl p-6 hover:bg-slate-50 transition-colors">
+<summary class="flex items-center justify-between cursor-pointer list-none font-bold text-slate-900">
+                            Os procedimentos doem?
+                            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform group-open:rotate-180"></i>
+</summary>
+<p class="mt-4 text-slate-600 leading-relaxed">
+                            Utilizamos as técnicas mais modernas e anestésicos tópicos ou injetáveis de alta qualidade para minimizar qualquer desconforto. A maioria das nossas clientes relata que os procedimentos são muito tranquilos.
+                        </p>
+</details>
+<details class="group border border-slate-100 rounded-2xl p-6 hover:bg-slate-50 transition-colors">
+<summary class="flex items-center justify-between cursor-pointer list-none font-bold text-slate-900">
+                            Qual o tempo de recuperação?
+                            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform group-open:rotate-180"></i>
+</summary>
+<p class="mt-4 text-slate-600 leading-relaxed">
+                            A maioria dos nossos tratamentos permite o retorno imediato às atividades normais. Alguns podem apresentar um leve inchaço ou vermelhidão por 24-48 horas.
+                        </p>
+</details>
+                </>
+            )}
+</div>
+</div>
+</section>
+
+<section class="py-24 bg-white" id="localizacao">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-primary font-bold uppercase tracking-widest text-sm mb-4">Onde Estamos</h2>
+<h3 class="text-4xl font-black text-slate-900">Nossa Localização</h3>
+</div>
+{contact.mapEmbedUrl ? (
+<div class="w-full h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-100 relative">
+    <iframe src={contact.mapEmbedUrl} width="100%" height="100%" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+) : (
+<div class="w-full h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-100 relative grayscale contrast-125 bg-slate-800">
+<img class="w-full h-full object-cover opacity-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbEsadXsXgJNw8NM12gczeXrXY_u9jUHn3JDBGqqIyDlo6lmuELpQ3jJbXzaQ_PVIHNmPftcmjQCi38k0UiVvu4153T2aBCMexaCsXZYFM4n49fjGz6lf2iryn2Kz7UpimovlE4ljMGpEzInRiqnCqjY3_jY0voFW9I_qG_qxSTIkP-nPKmG2pN898opvRziD5gVYGwucmtSKRil0ZwOConzXyPGbRqTKFm6sw9-3AzK3bq378jhFc9yFVx-G8_RF3l0vsaHiFdjTA"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-primary p-4 rounded-full animate-bounce shadow-2xl">
+<i data-lucide="map-pin" class="w-8 h-8 text-white"></i>
+</div>
+</div>
+</div>
+)}
+</div>
+</section>
+
+<section class="pt-24 pb-12 bg-background-dark text-white rounded-t-[3rem]" id="contato">
+<div class="max-w-7xl mx-auto px-6">
+
+{contact.instagramFeed ? (
+<div class="mb-24 text-center">
+    <h3 class="text-3xl font-bold mb-8">Nosso Instagram</h3>
+    <div class="w-full overflow-hidden rounded-2xl" set:html={contact.instagramFeed}>
+    </div>
+</div>
+) : ''}
+
+<div class="flex flex-col items-center text-center gap-8 mb-24 max-w-2xl mx-auto">
+<h3 class="text-4xl md:text-5xl font-bold tracking-tight">Inicie sua transformação hoje.</h3>
+<p class="text-slate-400 text-lg md:text-xl">Estamos localizados em uma área nobre, com infraestrutura completa para seu conforto.</p>
+<div class="flex flex-col sm:flex-row gap-6 mt-4 w-full justify-center">
+
+{contact.address ? (
+<div class="flex flex-col items-center gap-2 p-6 rounded-2xl bg-white/5 border border-white/10 w-full">
+<div class="size-12 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-2">
+<i data-lucide="map-pin" class="w-6 h-6"></i>
+</div>
+<p class="font-bold">Endereço</p>
+<p class="text-slate-400 text-sm">{contact.address}</p>
+</div>
+) : ''}
+
+<div class="flex flex-col items-center gap-2 p-6 rounded-2xl bg-white/5 border border-white/10 w-full">
+<div class="size-12 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-2">
+<i data-lucide="clock" class="w-6 h-6"></i>
+</div>
+<p class="font-bold">Atendimento</p>
+<p class="text-slate-400 text-sm" set:html={contact.openingHours || 'Segunda a Sexta: 09h às 19h<br>Sábado: 09h às 13h'}></p>
+</div>
+</div>
+<a href={`https://wa.me/${settings.whatsappNumber || ''}`} target="_blank" class="mt-8 bg-[#25D366] text-white px-10 py-5 rounded-xl font-bold text-lg hover:opacity-90 transition-all flex items-center justify-center gap-3 w-fit shadow-lg shadow-[#25D366]/20 hover:scale-105">
+<i data-lucide="message-circle" class="w-6 h-6"></i>
+                            Agendar por WhatsApp
+</a>
+</div>
+<div class="pt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="text-primary">
+<i data-lucide="sparkles" class="w-8 h-8"></i>
+</div>
+<span class="text-lg font-extrabold tracking-tight text-white uppercase">{settings.siteTitle || 'Aura Clinic'}</span>
+</div>
+<div class="flex gap-6">
+    {contact.instagram ? <a class="text-slate-400 hover:text-primary transition-colors" href={contact.instagram} target="_blank"><i data-lucide="instagram" class="w-5 h-5"></i></a> : ''}
+    {contact.facebook ? <a class="text-slate-400 hover:text-primary transition-colors" href={contact.facebook} target="_blank"><i data-lucide="facebook" class="w-5 h-5"></i></a> : ''}
+    {contact.tiktok ? <a class="text-slate-400 hover:text-primary transition-colors" href={contact.tiktok} target="_blank"><i data-lucide="video" class="w-5 h-5"></i></a> : ''}
+</div>
+<p class="text-slate-500 text-sm">© {new Date().getFullYear()} {settings.siteTitle || 'Aura Clinic'}. Todos os direitos reservados.</p>
+</div>
+</div>
+</section>
+</main>
+<script is:inline>
+    lucide.createIcons();
+</script>
+</body></html>

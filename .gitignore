@@ -1,0 +1,21 @@
+# Dependências do Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Saídas de Build do Astro
+dist/
+dist.zip
+.astro/
+
+# Cloudflare Wrangler
+.wrangler/
+
+# Arquivos do Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Variáveis de Ambiente locais (se você usar depois)
+.env
+.env.local

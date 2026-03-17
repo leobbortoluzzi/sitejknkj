@@ -1,0 +1,173 @@
+---
+import { env } from 'cloudflare:workers';
+
+if (!env || !env.kv) {
+    throw new Error("KV Namespace não encontrado no Cloudflare.");
+}
+
+const isFirstAccess = !(await env.kv.get("admin_hash"));
+---
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - {isFirstAccess ? 'Configuração Inicial' : 'Login'}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --primary: #d4af37;
+            --text: #ffffff;
+            --text-muted: #a1a1aa;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .login-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 60px 40px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .title {
+            font-family: serif;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 2px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn {
+            width: 100%;
+            background: var(--primary);
+            color: var(--bg);
+            border: none;
+            padding: 18px;
+            border-radius: 2px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+        }
+
+        #errorMsg {
+            color: #ff4d4d;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1 class="title">{isFirstAccess ? 'Setup' : 'Acesso'}</h1>
+        <p class="subtitle">{isFirstAccess ? 'Defina sua senha de administrador' : 'Painel de Controle'}</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="password">Senha Mestra</label>
+                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn">{isFirstAccess ? 'Configurar e Entrar' : 'Autenticar'}</button>
+            <div id="errorMsg"></div>
+        </form>
+    </div>
+
+    <script define:vars={{ isFirstAccess }}>
+        const form = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('errorMsg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            errorMsg.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/admin/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password, action: isFirstAccess ? 'setup' : 'login' })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    window.location.href = '/admin/dashboard';
+                } else {
+                    errorMsg.textContent = data.error || 'Erro de autenticação';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Erro de rede.';
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
